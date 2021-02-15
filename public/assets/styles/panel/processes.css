@@ -1,0 +1,72 @@
+.processes>div {
+  display: flex;
+  border-bottom: 0.2rem solid var(--secondary_color);
+  padding: 0.5rem;
+  justify-content: space-between;
+}
+
+.processes>div:last-child {
+  border-bottom: none;
+}
+
+.processes>div>.controls {
+  margin: 1.2rem;
+  margin-right: 0.6rem;
+}
+
+h2,h3 {
+  margin: 0.5rem;
+}
+
+h2 {
+  font-size: 1rem;
+}
+
+h3 {
+  font-size: 0.8rem;
+}
+
+button.control {
+  width: 1rem;
+  height: 1rem;
+  border: none;
+  border-radius: 1rem;
+  cursor: pointer;
+  outline: none;
+  transform: translateY(-0.2rem);
+}
+
+.start {
+  background-color: var(--green);
+}
+
+.start:hover {
+  background-color: var(--dark_green);
+}
+
+.restart {
+  background-color: var(--yellow);
+}
+
+.restart:hover {
+  background-color: var(--dark_yellow);
+}
+.stop {
+  background-color: var(--red);
+}
+
+.stop:hover {
+  background-color: var(--dark_red);
+}
+
+.pause {
+  background-color: var(--blue);
+}
+
+.pause:hover {
+  background-color: var(--dark_blue);
+}
+
+.pause.enabled {
+  background-color: var(--active_blue);
+}

@@ -1,0 +1,52 @@
+.login {
+  padding: 1rem;
+}
+
+.center {
+  margin-left: calc(50vw - 8rem);
+  width: 16rem;
+  text-align: center;
+}
+
+h1 {
+  margin-top: 20vh;
+  text-align: center;
+}
+
+input {
+  font-size: 1rem;
+  outline: none;
+  border: none;
+  margin: 0.5rem;
+  border-radius: 0.25rem;
+  padding: 0.4rem 0.6rem 0.4rem 0.6rem;
+  width: calc(100% - 2.2rem);
+  background-color: rgba(255,255,255,0.8)
+}
+
+input::placeholder {
+  font-size: 0.8rem;
+  transition: color 0.1s ease-in;
+}
+
+input:hover::placeholder {
+  color: rgba(1,1,1,0.2);
+}
+
+input[type="submit"] {
+  color: white;
+  background-color: var(--green);
+  cursor: pointer;
+  transition: background-color 0.2s ease-in;
+  margin-top: 3rem;
+  width: calc(100% - 1.2rem);
+}
+
+input[type="submit"]:hover {
+  background-color: var(--dark_green);
+}
+
+a.help {
+  color: var(--secondary_color);
+  font-size: 0.8rem;
+}
