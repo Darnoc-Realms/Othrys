@@ -4,6 +4,8 @@
 > ### REWRITE IN PROGRESS!
 > During v2 development, code may be drastically changed or removed. This is not ready for production!
 
+#### New (Pending) UI:
+![New example](https://i.imgur.com/wdlEBqH.png)
 
 #### Old UI:
 ![Old example gif](https://cdn.discordapp.com/attachments/729961633845346306/810420296267071570/drnc_panel.gif)
