@@ -27,7 +27,7 @@ const loginSpeedLimiter = slowDown({
 
 module.exports = function(app) {
 
-	app.post('/setup', function(req, res) {
+	app.post('/api/auth/setup', function(req, res) {
 		fs.readFile(path.join(__dirname, '../auth/data.json'), (err, data) => {
 			if (err) throw err;
 			const data_json = JSON.parse(data);
@@ -36,27 +36,27 @@ module.exports = function(app) {
 				const new_data = JSON.stringify(data_json);
 				fs.writeFile(path.join(__dirname, '../auth/data.json'), new_data, function(err) {
 					if (err) return console.log(err);
-					console.log('Set username');
+					console.log('Set username:', req.body.username);
+					res.sendStatus(201);
 				});
-				res.redirect('/');
 			}
 			else {
-				res.redirect('/?message=red:Already+set+up+authentication');
+			  res.status(405).send('Username already setup');
 			}
 		});
 	});
 
-	app.post('/login', loginSpeedLimiter, function(req, res) {
+	app.post('/api/auth/login', loginSpeedLimiter, function(req, res) {
 
 		const verified = auth.verify(req.body.username, req.body.token);
 		if (verified == true) {
 			const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 			console.log(`${ip} logged in on ${new Date(Date.now()).toString()}`);
 			req.session.authenticated = true;
-			res.redirect('/');
+			res.sendStatus(200);
 		}
 		else {
-			res.redirect('/?message=red:Your+username+or+token+was+incorrect');
+			res.status(401).send('Invalid username or token');
 		};
 	});
 
@@ -120,7 +120,7 @@ module.exports = function(app) {
 		};
 	});
 
-	app.post('/system/:action', function(req, res) {
+	app.post('/api/system/:action', function(req, res) {
 		if (req.session.authenticated) {
 			switch (req.params.action) {
 			case 'shutdown':
@@ -128,11 +128,13 @@ module.exports = function(app) {
 				break;
 			case 'restart':
 				console.log('would be restarting');
+				break;
 			}
-			res.redirect('/?message=green:Success!');
+			res.send('Success!');
 		}
 		else {
-			res.redirect('/?message=red:Lacking permissions');
+			res.status(401);
+			res.send('Lacking permissions');
 		};
 	});
 };

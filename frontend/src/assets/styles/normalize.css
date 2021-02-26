@@ -37,9 +37,9 @@ main {
  * `article` contexts in Chrome, Firefox, and Safari.
  */
 
-h1 {
-  font-size: 2em;
-  margin: 0.67em 0;
+h1, h2, h3 {
+  font-size: 1.5rem;
+  margin: 0;
 }
 
 /* Grouping content
@@ -163,7 +163,7 @@ optgroup,
 select,
 textarea {
   font-family: inherit; /* 1 */
-  font-size: 30rem; /* 1 */
+  font-size: 1rem; /* 1 */
   line-height: 1.15; /* 1 */
   margin: 0; /* 2 */
 }

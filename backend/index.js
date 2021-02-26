@@ -14,7 +14,6 @@ auth.generate_secret();
 // Express
 const express = require('express');
 const app = express();
-app.use(express.static('public'));
 const session = require('express-session');
 const uuid = require('uuid-1345'); // for hash
 app.use(session({
@@ -29,22 +28,25 @@ app.use(session({
 const cookieParser = require('cookie-parser');
 app.use(cookieParser());
 const bodyParser = require('body-parser');
+app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
 	extended: true,
 }));
-// app.enable('trust proxy');
 
-// EJS
-app.set('view engine', 'ejs');
+const cors = require('cors');
+app.use(cors());
+// app.enable('trust proxy');
 
 // Routes
 require('./server/requests/get')(app);
 require('./server/requests/post')(app);
 
+/*
 // Create minecraft instance
 const Screen = require('./minecraft/screen');
 const minecraft_instance = new Screen('minecraft', server.scripts);
 minecraft_instance.start();
+
 
 // Start PM2 sesssions for each Node process in config
 pm2.connect(function(err) {
@@ -66,6 +68,8 @@ pm2.connect(function(err) {
 	});
 
 });
+
+*/
 
 
 app.listen(8080);

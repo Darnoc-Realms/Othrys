@@ -105,15 +105,15 @@ module.exports = function(app) {
 		}
 	});
 
-	app.get('/api/system', function(req, res) {
+	app.get('/api/system/stats', function(req, res) {
 		if (req.session.authenticated) {
 			cpu.usage().then(cpu_usage => {
 				mem.used().then(mem_usage => {
 					si.cpuTemperature().then(temp => {
 						const system = {
-							cpu_usage: cpu_usage,
-							mem_usage: mem_usage,
-							temp: temp,
+							cpu: Math.round(cpu_usage * 10) / 10,
+							memory: [Math.round(mem_usage.usedMemMb / 100) / 10, Math.round(mem_usage.totalMemMb / 100) / 10],
+							temperature: Math.round(temp.main * 10) / 10,
 						};
 						res.json(system);
 					});
@@ -125,7 +125,42 @@ module.exports = function(app) {
 		}
 	});
 
-	app.get('/logout', function(req, res) {
+	// TODO: Read auth file instead of requiring it
+	/*
+		fs.readFile(path.join(__dirname, '../auth/data.json'), (err, data) => {
+			if (err) throw err;
+			const data_json = JSON.parse(data);
+			if (data_json.username == null) {
+
+			}
+			else {
+
+			}
+		});
+	*/
+	app.get('/api/auth/status', function(req, res) {
+		if (req.session.authenticated) {
+			res.json([true, 'logged in']);
+		}
+		else {
+			const auth_data = require('../auth/data.json');
+			if (auth_data.username != null) {
+				res.json([false, 'login']);
+			}
+			else {
+				res.json([false, 'setup']);
+			}
+		}
+	});
+
+	app.get('/api/auth/setup_qr', function(req, res) {
+		const auth_data = require('../auth/data.json');
+		if (auth_data.username == null) {
+			res.json(auth_data.twofactor.qr);
+		}
+	});
+
+	app.get('/api/auth/logout', function(req, res) {
 		req.session.authenticated = false;
 		res.redirect('/?message=yellow:Successful logout!');
 	});
