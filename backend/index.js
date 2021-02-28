@@ -19,6 +19,7 @@ const uuid = require('uuid-1345'); // for hash
 app.use(session({
 	resave: false,
 	saveUninitialized: false,
+	unset: 'destroy',
 	 secret: uuid.v4(),
 	 cookie: {
 		 maxAge: 60 * 1000 * 60 * 24,
@@ -34,7 +35,16 @@ app.use(bodyParser.urlencoded({
 }));
 
 const cors = require('cors');
-app.use(cors());
+app.use(cors({
+	origin: [
+	  'http://localhost:8080',
+	  'https://localhost:8080',
+	  'http://localhost:8899',
+	  'http://127.0.0.1:5500',
+	],
+	credentials: true,
+	exposedHeaders: ['set-cookie'],
+}));
 // app.enable('trust proxy');
 
 // Routes
@@ -48,7 +58,7 @@ const minecraft_instance = new Screen('minecraft', server.scripts);
 minecraft_instance.start();
 
 
-// Start PM2 sesssions for each Node process in config
+// Start PM2 sessions for each Node process in config
 pm2.connect(function(err) {
 	if (err) {
 		console.error(err);
@@ -72,4 +82,4 @@ pm2.connect(function(err) {
 */
 
 
-app.listen(8080);
+app.listen(8899);

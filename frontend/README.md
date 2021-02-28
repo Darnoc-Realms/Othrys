@@ -1,10 +1,6 @@
-# ui
-
-## Project setup
-```
-yarn install
-```
-
+# Panel Frontend
+Written in Vue
+## Develop
 ### Compiles and hot-reloads for development
 ```
 yarn serve
@@ -19,6 +15,9 @@ yarn build
 ```
 yarn lint
 ```
+
+## Production
+1. Set the `process.env.VUE_APP_API_URL` in `vue.config.js` to the URL of your website's backend. Such as `http://example.com/api`
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).

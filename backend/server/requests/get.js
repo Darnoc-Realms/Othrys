@@ -125,43 +125,34 @@ module.exports = function(app) {
 		}
 	});
 
-	// TODO: Read auth file instead of requiring it
-	/*
-		fs.readFile(path.join(__dirname, '../auth/data.json'), (err, data) => {
-			if (err) throw err;
-			const data_json = JSON.parse(data);
-			if (data_json.username == null) {
-
-			}
-			else {
-
-			}
-		});
-	*/
 	app.get('/api/auth/status', function(req, res) {
 		if (req.session.authenticated) {
 			res.json([true, 'logged in']);
 		}
 		else {
-			const auth_data = require('../auth/data.json');
-			if (auth_data.username != null) {
-				res.json([false, 'login']);
-			}
-			else {
-				res.json([false, 'setup']);
-			}
+			fs.readFile(path.join(__dirname, '../auth/data.json'), (err, data) => {
+				if (err) throw err;
+				const data_json = JSON.parse(data);
+				if (data_json.username != null) {
+					res.json([false, 'login']);
+				}
+				else {
+					res.json([false, 'setup']);
+				}
+			});
 		}
 	});
 
 	app.get('/api/auth/setup_qr', function(req, res) {
-		const auth_data = require('../auth/data.json');
-		if (auth_data.username == null) {
-			res.json(auth_data.twofactor.qr);
-		}
-	});
-
-	app.get('/api/auth/logout', function(req, res) {
-		req.session.authenticated = false;
-		res.redirect('/?message=yellow:Successful logout!');
+		fs.readFile(path.join(__dirname, '../auth/data.json'), (err, data) => {
+			if (err) throw err;
+			const data_json = JSON.parse(data);
+			if (data_json.username == null) {
+				res.json(data_json.twofactor.qr);
+			}
+			else {
+				res.status(405).send('Username already setup');
+			}
+		});
 	});
 };

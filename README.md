@@ -9,3 +9,10 @@
 
 #### Old UI:
 ![Old example gif](https://cdn.discordapp.com/attachments/729961633845346306/810420296267071570/drnc_panel.gif)
+
+
+## Develop
+
+1. Clone this repository
+2. Run `yarn install` or `npm install` in both the `/backend` and `/frontend`
+3. Follow the respective guides in the README.md of both folders

@@ -16,11 +16,18 @@
           <input
             type="text"
             v-model.lazy.trim="loginToken"
-            placeholder="### ###"
+            placeholder="######"
+            pattern="[0-9]{6}"
           />
         </div>
         <div class="button_area">
-          <button type="button" class="extra">Reset Secret</button>
+          <button
+            type="button"
+            class="extra"
+            onclick="window.open('https://github.com/Darnoc-Realms/Othrys/wiki/Reset-2FA-Secret')"
+          >
+            Reset Secret
+          </button>
           <button type="submit" class="emphasis">Login</button>
         </div>
       </form>
@@ -54,33 +61,33 @@
 <script>
 export default {
   props: {
-    state: {
-      type: String,
+    inSetup: {
+      type: Boolean,
       required: true,
     },
   },
   methods: {
     completeSetup() {
       if (this.setUsername != "") {
-        fetch("http://localhost:8080/api/auth/setup", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ username: this.setUsername }),
-        }).then((response) => {
-          if (response.status == 201) {
-            this.$notify({
-              title: "Completed Setup",
-              text: "With username: <b>" + this.setUsername + "</b>",
-            });
-            this.inSetup = false;
-          } else {
-            this.$notify({
-              title: "Setup Error",
-              type: "error",
-              text: response.statusText,
-            });
-          }
-        });
+        this.axios
+          .post("auth/setup", {
+            username: this.setUsername,
+          })
+          .then((response) => {
+            if (response.status == 201) {
+              this.$notify({
+                title: "Completed Setup",
+                text: "With username: <b>" + this.setUsername + "</b>",
+              });
+              this.inSetup = false;
+            } else {
+              this.$notify({
+                title: "Setup Error",
+                type: "error",
+                text: response.statusText,
+              });
+            }
+          });
       } else {
         this.$notify({
           title: "Missing Fields",
@@ -91,28 +98,25 @@ export default {
     },
     completeLogin() {
       if (this.loginUsername != "" && this.loginToken != "") {
-        fetch("http://localhost:8080/api/auth/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
+        this.axios
+          .post("auth/login", {
             username: this.loginUsername,
             token: this.loginToken,
-          }),
-        }).then((response) => {
-          if (response.status == 201) {
+          })
+          .then(() => {
             this.$notify({
               title: "Login Successful",
-              text: "As: <b>" + this.setUsername + "</b>",
+              text: "As: <b>" + this.loginUsername + "</b>",
             });
             this.$emit("logged_in");
-          } else {
+          })
+          .catch((error) => {
             this.$notify({
               title: "Login Error",
               type: "error",
-              text: response.statusText,
+              text: error.response.data,
             });
-          }
-        });
+          });
       } else {
         this.$notify({
           title: "Missing Fields",
@@ -125,7 +129,6 @@ export default {
   computed: {},
   data() {
     return {
-      inSetup: false,
       loginUsername: "",
       loginToken: "",
       setUsername: "",
@@ -134,14 +137,11 @@ export default {
   },
   beforeCreate() {},
   created() {
-    if (this.state == "setup") {
-      this.inSetup = true;
-    }
-    fetch("http://localhost:8080/api/auth/setup_qr")
-      .then((response) => response.json())
-      .then((data) => {
+    if (this.inSetup) {
+      this.getAPI("auth/setup_qr").then((data) => {
         this.qrUrl = data;
-      });
+      })
+    }
   },
 };
 </script>

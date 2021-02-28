@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <auth-form v-if="!authenticated" @logged_in="login" :state="state" />
+    <auth-form v-if="!authenticated" @logged_in="login" :in-setup="inSetup" />
     <div
       class="windows"
       v-bind:class="{ blur: !authenticated }"
@@ -9,7 +9,7 @@
       <apps />
     </div>
     <notifications position="bottom right" :ignore-duplicates="true" />
-    <footer-bar :authenticated="authenticated"/>
+    <footer-bar :authenticated="authenticated" />
   </div>
 </template>
 
@@ -27,32 +27,38 @@ export default {
   },
   data() {
     return {
-      authenticated: false,
+      authenticated: true,
       state: "",
     };
   },
   methods: {
     focusableWindows(boolean) {
       function recursiveUnfocusable(el) {
-      el.disabled = !boolean;
-      [...el.children].forEach(recursiveUnfocusable);
+        el.disabled = !boolean;
+        [...el.children].forEach(recursiveUnfocusable);
       }
-
       recursiveUnfocusable(this.$refs.needsToNotBeFocusable);
     },
     login() {
-      this.focusableWindows(true)
-      this.authenticated = true
+      this.focusableWindows(true);
+      this.authenticated = true;
     },
   },
-  async beforeCreate() {
-    const response = await fetch("http://localhost:8080/api/auth/status");
-    const data = await response.json();
-    this.authenticated = data[0];
-    return this.authenticated;
+  computed: {
+    inSetup() {
+      return this.state == "setup" ? true : false;
+    },
+  },
+  beforeCreate() {
+    this.getAPI("auth/status").then((data) => {
+      this.authenticated = data[0];
+      this.state = data[1];
+    });
   },
   mounted() {
-    this.focusableWindows(false)
+    if (!this.authenticated) {
+      this.focusableWindows(false);
+    }
   },
 };
 </script>
@@ -106,7 +112,8 @@ export default {
   }
 }
 
-html, body {
+html,
+body {
   height: 100%;
 }
 

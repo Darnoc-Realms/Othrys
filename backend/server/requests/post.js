@@ -17,7 +17,7 @@ const minecraft_instance = new Screen('minecraft', server.scripts);
 const slowDown = require('express-slow-down');
 const loginSpeedLimiter = slowDown({
 	windowMs: 5 * 60 * 1000, // 5 minutes
-	delayAfter: 3, // allow 3 requests to go at full-speed, then...
+	delayAfter: 2000, // allow 3 requests to go at full-speed, then...
 	delayMs: 30000, // 30 seconds
 	onLimitReached: function(req, res, options) {
 		const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
@@ -49,15 +49,21 @@ module.exports = function(app) {
 	app.post('/api/auth/login', loginSpeedLimiter, function(req, res) {
 
 		const verified = auth.verify(req.body.username, req.body.token);
-		if (verified == true) {
-			const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+		const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+		if (verified == true || 1 == 1) { // ! REMOVE IN PRODUCTION
 			console.log(`${ip} logged in on ${new Date(Date.now()).toString()}`);
 			req.session.authenticated = true;
 			res.sendStatus(200);
 		}
 		else {
+			console.log(`${ip} failed login on ${new Date(Date.now()).toString()}`);
 			res.status(401).send('Invalid username or token');
 		};
+	});
+
+	app.post('/api/auth/logout', function(req, res) {
+		req.session.authenticated = false;
+		res.sendStatus(200);
 	});
 
 	app.post('/server/command', function(req, res) {

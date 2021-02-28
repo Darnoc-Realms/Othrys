@@ -25,9 +25,9 @@ function generate_secret() {
 function verify(username, token) {
 	const data = fs.readFileSync(path.join(__dirname, 'data.json'));
 	const data_json = JSON.parse(data);
-	const delta = twofactor.verifyToken(data_json.twofactor.secret, token, 1);
+	const delta = twofactor.verifyToken(data_json.twofactor.secret, token, 0.5);
 	if (delta) {
-		if (delta.delta <= 1 && delta.delta >= 0 && data_json.username == username) {
+		if (delta.delta == 0.5) {
 			return true;
 		}
 		else {

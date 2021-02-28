@@ -1,8 +1,8 @@
 <template>
   <footer>
     <section class="left">
-      <a id="logActionButton" href="/api/auth/logout">{{ logAction }}</a>
-      <p class="version"><i>Othrys</i> v{{ getVersion }}</p>
+      <a id="logActionButton" @click="doLogAction" href="#">{{ logAction }}</a>
+      <p class="version"><i>Othrys</i> v{{ version }}</p>
     </section>
     <section class="right" v-if="authenticated">
       <p class="stats" ref="stats">{{ formatStats }}</p>
@@ -31,19 +31,49 @@ export default {
   methods: {
     async updateStats() {
       if (this.authenticated) {
-        const response = await fetch("http://localhost:8080/api/system/stats");
-        const data = await response.json();
-        return (this.stats = {
-          cpu: data.cpu,
-          memory: [data.memory[0], data.memory[1]],
-          temperature: data.temperature,
+        this.getAPI("system/stats").then((data) => {
+          return (this.stats = {
+            cpu: data.cpu,
+            memory: [data.memory[0], data.memory[1]],
+            temperature: data.temperature,
+          });
         });
       }
     },
     async machineAction(action) {
-      await fetch("http://localhost:8080/api/system/" + action, {
-        method: "POST",
-      });
+      this.axios
+        .post("system/" + action)
+        .then(() => {
+          this.$notify({
+            title: `Sent "${action}"`,
+            text: "The panel will lose access to the server shortly",
+          });
+        })
+        .catch((error) => {
+          this.$notify({
+            title: "Action Error",
+            type: "error",
+            text: error.response.statusText,
+          });
+        });
+    },
+    doLogAction() {
+      if (this.authenticated) {
+        this.axios
+          .post("auth/logout")
+          .then(() => {
+            window.location.href = "/";
+          })
+          .catch((error) => {
+            this.$notify({
+              title: "Logout Error",
+              type: "error",
+              text: error.response.data,
+            });
+          });
+      } else {
+        window.location.href = "/";
+      }
     },
   },
   computed: {
@@ -63,9 +93,6 @@ export default {
         (this.stats.temperature ? ` | TEMP: ${this.stats.temperature}°C` : "")
       );
     },
-    getVersion() {
-      return process.env.VUE_APP_VERSION;
-    },
   },
   data() {
     return {
@@ -74,6 +101,7 @@ export default {
         memory: "",
         temperature: "",
       },
+      version: process.env.VUE_APP_VERSION,
       timer: "",
     };
   },
