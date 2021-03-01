@@ -6,7 +6,8 @@
       v-bind:class="{ blur: !authenticated }"
       ref="needsToNotBeFocusable"
     >
-      <apps />
+    <apps :authenticated="authenticated" />
+    <terminal :authenticated="authenticated" />
     </div>
     <notifications position="bottom right" :ignore-duplicates="true" />
     <footer-bar :authenticated="authenticated" />
@@ -17,12 +18,15 @@
 import FooterBar from "./components/FooterBar.vue";
 import Apps from "./components/windows/apps/Apps.vue";
 import AuthForm from "./components/auth/AuthForm.vue";
+import Terminal from "./components/windows/terminal/Terminal.vue";
+
 
 export default {
   name: "App",
   components: {
     FooterBar,
     Apps,
+    Terminal,
     AuthForm,
   },
   data() {
@@ -139,6 +143,12 @@ body {
 .windows {
   padding: 4rem;
   transition: filter 0.6s ease-out;
+  display: flex;
+  flex-direction: column;
+}
+
+.windows>div:first-child {
+  margin-bottom: 2rem;
 }
 
 .windows.blur {
