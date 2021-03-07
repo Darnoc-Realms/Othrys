@@ -4,7 +4,7 @@
 > ### REWRITE IN PROGRESS!
 > During v2 development, code may be drastically changed or removed. This is not ready for production!
 
-## New work-in-progress UI:
+#### New work-in-progress UI:
 ![WIP UI](https://i.imgur.com/itj0gUM.png)
 
 #### v2 Mockup UI:
