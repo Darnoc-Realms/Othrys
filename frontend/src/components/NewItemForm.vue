@@ -1,24 +1,17 @@
 <template>
   <form @submit.prevent="onSubmit" autocomplete="off">
-    <h2>Create App</h2>
-    <div>
-      <label> App Name </label><br />
-      <input type="text" model.lazy.trim="newName" required />
+    <h2>Create {{ itemName }}</h2>
+    <div v-for="field in fields" :key="field.id">
+      <label> {{ field.title }} </label><br />
+      <input v-if="field.type == 'String'" type="text" v-model.lazy.trim="inputs[field.name]" />
+      <div v-else-if="field.type == 'Array'">
+        <div v-for="option in field.options" :key="option[0]" v>
+          <input type="text" v-model.lazy.trim="inputs[option[0]]" :placeholder="option[1]" />
+        </div>
+      </div>
     </div>
     <div>
-      <label> Short Descripton </label><br />
-      <input type="text" v-model.lazy.trim="newDesc" />
-    </div>
-    <div>
-      <label> Path to index </label><br />
-      <input type="text" v-model.lazy.trim="newPath" required />
-    </div>
-    <div>
-      <label> Git Repository URL </label><br />
-      <input type="text" v-model.lazy.trim="newGitURL" required />
-    </div>
-    <div>
-      <button type="submit" @click="createApp" class="emphasis">Create</button>
+      <button type="submit" @click="createItem" class="emphasis">Create</button>
       <button type="button" @click="cancelForm">Cancel</button>
     </div>
   </form>
@@ -26,22 +19,32 @@
 
 <script>
 export default {
-  props: {},
+  props: {
+    itemName: {
+      type: String,
+      required: true,
+    },
+    fields: {
+      type: Array,
+      required: false,
+    },
+  },
   methods: {
     cancelForm() {
-      this.$emit("new-app-cancelled");
+      this.$emit("new-item-cancelled");
     },
-    createApp() {
-      this.$emit("new-app-created", this.data);
+    createItem() {
+      let item = {}
+      this.fields.forEach(field => {
+        item[field.name] = this.inputs[field.name]
+      })
+      this.$emit("new-item-created", item);
     },
   },
   computed: {},
   data() {
     return {
-      newName: "",
-      newDesc: "",
-      newPath: "",
-      newGitURL: "",
+      inputs: {}
     };
   },
 };
@@ -50,6 +53,7 @@ export default {
 <style scoped>
 form {
   padding: 1.5rem;
+  background-color: var(--container_color);
 }
 
 div {

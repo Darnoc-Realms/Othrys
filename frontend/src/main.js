@@ -10,6 +10,13 @@ axios.defaults.withCredentials = true;
 axios.defaults.baseURL = process.env.VUE_APP_API_URL;
 Vue.use(VueAxios, axios);
 
+import VueSocketIO from 'vue-socket.io'
+import SocketIO from "socket.io-client"
+Vue.use(new VueSocketIO({
+  debug: true,
+  connection: SocketIO('http://localhost:3000'),
+}))
+
 const getAPI = {
   install(Vue) {
     Vue.prototype.getAPI = (url) => {
@@ -24,7 +31,7 @@ const getAPI = {
             Vue.notify({
               title: "Network Error",
               type: "error",
-              text: (error.response) ? error.response.data : "Could not get API: " + error.response.config.url,
+              text: (error.response) ? (error.response.data) ? error.response.data : "Could not get API: " + error.response.config.url : "Unknown",
             });
             reject();
           });

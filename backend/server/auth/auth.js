@@ -11,10 +11,10 @@ function generate_secret() {
 		}
 		else {
 			const new_secret = twofactor.generateSecret({ name: 'DRNC Panel' });
-			const data = JSON.stringify({ username: null, twofactor: new_secret });
+			const data = JSON.stringify({ password: null, twofactor: new_secret });
 			fs.writeFile(path.join(__dirname, 'data.json'), data, function(err) {
 				if (err) return console.log(err);
-				console.info('\x1b[33m%s\x1b[0m', 'Set up a username and password at http://localhost:8080');
+				console.info('\x1b[33m%s\x1b[0m', 'Set up a password and password at http://localhost:8080');
 			});
 		}
 	});
@@ -22,7 +22,7 @@ function generate_secret() {
 
 // 2 show qr keycode
 
-function verify(username, token) {
+function verify(password, token) {
 	const data = fs.readFileSync(path.join(__dirname, 'data.json'));
 	const data_json = JSON.parse(data);
 	const delta = twofactor.verifyToken(data_json.twofactor.secret, token, 0.5);

@@ -4,7 +4,14 @@
       <h1>
         Apps <span class="thin">{{ appCount }} </span>
       </h1>
-      <button class="add_app" @click="toggleAddView" v-bind:class="{ active: inAddView }">{{ addButton }}</button>
+      <button
+        title="Create new app"
+        class="add_app"
+        @click="toggleAddView"
+        v-bind:class="{ active: inAddView }"
+      >
+        {{ addButton }}
+      </button>
     </header>
     <div class="contents">
       <table v-if="!inAddView">
@@ -26,6 +33,7 @@
 </template>
 
 <script>
+// TODO: Make socket code invalid on logout
 import AppItem from "./AppItem.vue";
 import NewAppForm from "./NewAppForm.vue";
 
@@ -98,20 +106,33 @@ export default {
   overflow: hidden;
 }
 
+header>*{
+  margin: 0 0.5rem;
+}
+
+h1 {
+  margin-left: 1rem;
+}
+
 button.add_app {
+  width: 2rem;
+  height: 2rem;
   background: none;
   border: none;
   font-size: 1.6rem;
   font-weight: 400;
-  padding: 0.2rem;
+  padding: 0.2rem 0.6rem;
   border-radius: 0.5rem;
   cursor: pointer;
   color: var(--light_text);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 button.add_app:hover {
   background-color: var(--light_color);
-  color: var(--hover_text)
+  color: var(--hover_text);
 }
 
 button.add_app.active {
@@ -124,6 +145,10 @@ table {
   border-collapse: collapse;
   color: var(--medium_text);
   line-height: 1.5rem;
+}
+
+.contents {
+  flex: 1;
 }
 
 @media only screen and (max-width: 575px) and (orientation: portrait) {

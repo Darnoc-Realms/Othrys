@@ -10,12 +10,20 @@
         title="Restart"
         class="control yellow"
         @click="machineAction('restart')"
-      ></button
-      ><button
+      ></button>
+      <button
         title="Shutdown"
         class="control red"
         @click="machineAction('shutdown')"
       ></button>
+      <button
+        title="Settings"
+        class="icon"
+        @click="toggleSettings()"
+        :class="{ active: inSettings }"
+      >
+        <img src="./../assets/icons/cog.svg" />
+      </button>
     </section>
   </footer>
 </template>
@@ -27,9 +35,13 @@ export default {
       type: Boolean,
       required: true,
     },
+    inSettings: {
+      type: Boolean,
+      required: true,
+    },
   },
   methods: {
-    async updateStats() {
+    updateStats() {
       if (this.authenticated) {
         this.getAPI("system/stats").then((data) => {
           return (this.stats = {
@@ -40,7 +52,7 @@ export default {
         });
       }
     },
-    async machineAction(action) {
+    machineAction(action) {
       this.axios
         .post("system/" + action)
         .then(() => {
@@ -72,8 +84,12 @@ export default {
             });
           });
       } else {
+        this.$socket.emit("logout");
         window.location.href = "/";
       }
+    },
+    toggleSettings() {
+      this.$emit("toggle-settings");
     },
   },
   computed: {
@@ -106,7 +122,7 @@ export default {
     };
   },
   created() {
-    setTimeout(this.updateStats, 100);
+    setTimeout(this.updateStats, 50);
     this.timer = setInterval(this.updateStats, 10000);
   },
 };
@@ -114,13 +130,12 @@ export default {
 
 <style scoped>
 footer {
-  width: 100%;
-  position: absolute;
-  bottom: 0;
   background-color: var(--bar_color);
   font-size: 1rem;
   display: flex;
   filter: drop-shadow(0 0rem 0.5rem rgba(0, 0, 0, 0.1));
+  z-index: 100;
+  height: 3rem;
 }
 
 footer > section {
@@ -161,6 +176,55 @@ button.control.yellow {
 
 button.control.yellow:hover {
   background-color: var(--dark_yellow);
+}
+
+button.icon {
+  background: none;
+  border: none;
+  padding: 0;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 0.3rem;
+}
+
+button.icon > img {
+  width: 1.6rem;
+  filter: invert(55%);
+  transition: scale 0.5s ease-in, filter 0.5s ease-in;
+}
+
+button.icon:hover > img {
+  filter: invert(40%);
+}
+
+button.icon.active > img {
+  filter: invert(30%);
+  scale: 1.1;
+  animation: spin 5s linear 0s infinite;
+}
+
+@media (prefers-color-scheme: dark) {
+  button.icon > img {
+    filter: invert(60%);
+  }
+  button.icon:hover > img {
+    filter: invert(80%);
+  }
+  button.icon.active > img {
+    filter: invert(100%);
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 a#logActionButton {

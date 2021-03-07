@@ -4,10 +4,10 @@
       <header><h1>Login</h1></header>
       <form @submit.prevent="completeLogin" autocomplete="off">
         <div>
-          <label> Username </label><br />
+          <label> Password </label><br />
           <input
-            type="text"
-            v-model.lazy.trim="loginUsername"
+            type="password"
+            v-model.lazy.trim="loginPassword"
             placeholder="..."
           />
         </div>
@@ -36,10 +36,14 @@
       <header><h1>Setup</h1></header>
       <form @submit.prevent="completeSetup" autocomplete="off">
         <div>
-          <label> Set Username </label><br />
+          <label> Set Password </label><br />
+          <p>
+            This will be stored in plain text.<br />DO NOT USE THIS PASSWORD FOR
+            ANYTHING ELSE!
+          </p>
           <input
             type="text"
-            v-model.lazy.trim="setUsername"
+            v-model.lazy.trim="setPassword"
             placeholder="..."
           />
         </div>
@@ -68,16 +72,16 @@ export default {
   },
   methods: {
     completeSetup() {
-      if (this.setUsername != "") {
+      if (this.setPassword != "") {
         this.axios
           .post("auth/setup", {
-            username: this.setUsername,
+            password: this.setPassword,
           })
           .then((response) => {
             if (response.status == 201) {
               this.$notify({
                 title: "Completed Setup",
-                text: "With username: <b>" + this.setUsername + "</b>",
+                text: "With password: <b>" + this.setPassword + "</b>",
               });
               this.inSetup = false;
             } else {
@@ -92,21 +96,24 @@ export default {
         this.$notify({
           title: "Missing Fields",
           type: "warn",
-          text: "You must choose a username",
+          text: "You must choose a password",
         });
       }
     },
     completeLogin() {
-      if (this.loginUsername != "" && this.loginToken != "") {
+      if (this.loginPassword != "" && this.loginToken != "") {
+        this.$socket.emit("login", {
+          password: this.loginPassword,
+          token: this.loginToken,
+        });
         this.axios
           .post("auth/login", {
-            username: this.loginUsername,
+            password: this.loginPassword,
             token: this.loginToken,
           })
           .then(() => {
             this.$notify({
               title: "Login Successful",
-              text: "As: <b>" + this.loginUsername + "</b>",
             });
             this.$emit("logged_in");
           })
@@ -121,7 +128,7 @@ export default {
         this.$notify({
           title: "Missing Fields",
           type: "warn",
-          text: "The username or token is missing",
+          text: "The password or token is missing",
         });
       }
     },
@@ -129,18 +136,17 @@ export default {
   computed: {},
   data() {
     return {
-      loginUsername: "",
+      loginPassword: "",
       loginToken: "",
-      setUsername: "",
+      setPassword: "",
       qrUrl: "",
     };
   },
-  beforeCreate() {},
   created() {
     if (this.inSetup) {
       this.getAPI("auth/setup_qr").then((data) => {
         this.qrUrl = data;
-      })
+      });
     }
   },
 };
@@ -166,13 +172,14 @@ div.box {
 header {
   text-align: center;
   background-color: rgba(66, 66, 66, 0.9);
+  border-radius: 0.9rem 0.9rem 0 0;
   color: white;
   display: block;
 }
 
 form {
   background-color: var(--thick_color);
-  border-radius: var(--radius_bottom);
+  border-radius: 0 0 0.9rem 0.9rem;
   padding: 2rem;
 }
 

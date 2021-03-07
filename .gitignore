@@ -1,5 +1,6 @@
 yarn.lock
-config.json
+config
+*.txt
 server/auth/data.json
 .eslintrc.json
 *.log

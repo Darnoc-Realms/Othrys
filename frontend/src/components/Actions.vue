@@ -91,6 +91,7 @@ export default {
       this.$notify({
         title: name + " " + this.appName,
         text: "Success",
+        type: "success",
       });
     },
     togglePopup() {
@@ -143,7 +144,7 @@ div.popup {
   position: absolute;
   display: flex;
   flex-direction: column;
-  background-color: rgba(231, 231, 231, 0.945);
+  background-color: rgba(202, 202, 202, 0.966);
   width: 6rem;
   margin-top: 0.5rem;
   padding: 0.3rem;
@@ -169,8 +170,8 @@ svg {
   display: inline-block;
   height: 1.1rem;
   vertical-align: middle;
-  margin-left: 0.3rem;
-  transform: translateY(-0.15rem);
+  margin-left: 0.5rem;
+  transform: translateY(-0.16rem);
 }
 
 .path {

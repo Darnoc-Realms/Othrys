@@ -108,10 +108,6 @@ tr {
   border-color: var(--light_color);
 }
 
-tr:last-child {
-  border-bottom: none;
-}
-
 tr>td {
   padding: 0.5rem 0.2rem;
 }

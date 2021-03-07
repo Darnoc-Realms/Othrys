@@ -1,6 +1,3 @@
-// Configuration
-const { processes, server } = require('./config.json');
-
 // File system
 const fs = require('fs');
 
@@ -14,9 +11,9 @@ auth.generate_secret();
 // Express
 const express = require('express');
 const app = express();
-const session = require('express-session');
 const uuid = require('uuid-1345'); // for hash
-app.use(session({
+const session = require('express-session');
+const sessionMiddleware = session({
 	resave: false,
 	saveUninitialized: false,
 	unset: 'destroy',
@@ -24,8 +21,9 @@ app.use(session({
 	 cookie: {
 		 maxAge: 60 * 1000 * 60 * 24,
 		 secure: false, // change to true in production
+		 httpOnly: false,
 	 },
-}));
+});
 const cookieParser = require('cookie-parser');
 app.use(cookieParser());
 const bodyParser = require('body-parser');
@@ -47,16 +45,16 @@ app.use(cors({
 }));
 // app.enable('trust proxy');
 
+app.use(sessionMiddleware);
+
 // Routes
 require('./server/requests/get')(app);
 require('./server/requests/post')(app);
 
-/*
-// Create minecraft instance
-const Screen = require('./minecraft/screen');
-const minecraft_instance = new Screen('minecraft', server.scripts);
-minecraft_instance.start();
+const processes = require('./server/loaders/processes');
+processes.initialLoad();
 
+/*
 
 // Start PM2 sessions for each Node process in config
 pm2.connect(function(err) {
